@@ -82,28 +82,88 @@ int main(int argc, char** argv) {
 	int filename_count = argc - i;
 	char** filenames = argv + i;
 
+	int errors = 0;
 	for (int j = 0; j < filename_count; j++) {
 		char* infile = filenames[j];
 
-		char* infile_noext = remove_extension_and_path(infile);
-		printf("%s\n", infile_noext);
+		VGMSTREAM* vgmstream = init_vgmstream(infile);
+		if (vgmstream == NULL) {
+			fprintf(stderr, "Could not open file %s\n", infile);
+			fflush(stderr);
+			errors++;
+		} else {
+			char* infile_noext = remove_extension_and_path(infile);
 
-		char* outfile = (char*)malloc(strlen(infile_noext) + 20);
+			printf("Rendering: %s\n", infile_noext);
+			fflush(stdout);
+			sample* samples = (sample*)malloc(sizeof(sample) * vgmstream->channels * vgmstream->num_samples);
+			render_vgmstream(samples, vgmstream->num_samples, vgmstream);
 
-		if (export_type & START_TO_LOOP) {
-			sprintf(outfile, "%s (beginning).wav", infile_noext);
-			printf("out: %s\n", outfile);
-		}
-		if (export_type & LOOP_TO_END) {
-			sprintf(outfile, "%s (loop).wav", infile_noext);
-			printf("out: %s\n", outfile);
-		}
-		if (export_type & START_TO_END) {
-			sprintf(outfile, "%s.wav", infile_noext);
-			printf("out: %s\n", outfile);
+			uint8_t* wavbuffer = (uint8_t*)malloc(0x2C);
+			char* outfile = (char*)malloc(strlen(infile_noext) + 20);
+
+			if (export_type & START_TO_LOOP) {
+				sprintf(outfile, "%s (beginning).wav", infile_noext);
+				printf("Output: %s\n", outfile);
+				fflush(stdout);
+
+				FILE* f = fopen(outfile, "wb");
+				make_wav_header(wavbuffer,
+					vgmstream->loop_start_sample,
+					vgmstream->sample_rate,
+					vgmstream->channels);
+				fwrite(wavbuffer, 0x2C, 1, f);
+				fwrite(samples,
+					sizeof(sample),
+					vgmstream->loop_start_sample * vgmstream->channels,
+					f);
+				fclose(f);
+			}
+			if (export_type & LOOP_TO_END) {
+				sprintf(outfile, "%s (loop).wav", infile_noext);
+				printf("Output: %s\n", outfile);
+				fflush(stdout);
+
+				FILE* f = fopen(outfile, "wb");
+				make_wav_header(wavbuffer,
+					vgmstream->loop_end_sample - vgmstream->loop_start_sample,
+					vgmstream->sample_rate,
+					vgmstream->channels);
+				fwrite(wavbuffer, 0x2C, 1, f);
+				fwrite(samples + vgmstream->loop_start_sample * vgmstream->channels,
+					sizeof(sample),
+					(vgmstream->loop_end_sample - vgmstream->loop_start_sample) * vgmstream->channels,
+					f);
+				fclose(f);
+			}
+			if (export_type & START_TO_END) {
+				sprintf(outfile, "%s.wav", infile_noext);
+				printf("Output: %s\n", outfile);
+				fflush(stdout);
+
+				FILE* f = fopen(outfile, "wb");
+				make_wav_header(wavbuffer,
+					vgmstream->num_samples,
+					vgmstream->sample_rate,
+					vgmstream->channels);
+				fwrite(wavbuffer, 0x2C, 1, f);
+				fwrite(samples,
+					sizeof(sample),
+					vgmstream->num_samples * vgmstream->channels,
+					f);
+				fclose(f);
+			}
+
+			free(samples);
+			free(outfile);
+			free(wavbuffer);
+			free(infile_noext);
 		}
 
-		free(outfile);
-		free(infile_noext);
+		close_vgmstream(vgmstream);
 	}
+
+	return errors > 0
+		? 1
+		: 0;
 }
