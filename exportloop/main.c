@@ -43,9 +43,9 @@ int usage(int retval, char* name) {
 }
 
 typedef enum {
-	START_TO_LOOP = 1,
+	ZERO_TO_LOOP = 1,
 	LOOP_TO_END = 2,
-	START_TO_END = 4
+	ZERO_TO_END = 4
 } export_types;
 
 int main(int argc, char** argv) {
@@ -62,11 +62,11 @@ int main(int argc, char** argv) {
 			// End of parameters
 			break;
 		} else if (strcasecmp("-0L", arg) == 0) {
-			export_type |= START_TO_LOOP;
+			export_type |= ZERO_TO_LOOP;
 		} else if (strcasecmp("-LE", arg) == 0) {
 			export_type |= LOOP_TO_END;
 		} else if (strcasecmp("-0E", arg) == 0) {
-			export_type |= START_TO_END;
+			export_type |= ZERO_TO_END;
 		} else if (strcasecmp("--help", arg) == 0) {
 			return usage(0, argv[0]);
 		} else {
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
 	}
 
 	if (export_type == 0) {
-		export_type = START_TO_END;
+		export_type = ZERO_TO_END;
 	}
 
 	int filename_count = argc - i;
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
 			uint8_t* wavbuffer = (uint8_t*)malloc(0x2C);
 			char* outfile = (char*)malloc(strlen(infile_noext) + 20);
 
-			if (export_type & START_TO_LOOP) {
+			if (export_type & ZERO_TO_LOOP) {
 				sprintf(outfile, "%s (beginning).wav", infile_noext);
 				printf("Output: %s\n", outfile);
 				fflush(stdout);
@@ -138,7 +138,7 @@ int main(int argc, char** argv) {
 					f);
 				fclose(f);
 			}
-			if (export_type & START_TO_END) {
+			if (export_type & ZERO_TO_END) {
 				sprintf(outfile, "%s.wav", infile_noext);
 				printf("Output: %s\n", outfile);
 				fflush(stdout);

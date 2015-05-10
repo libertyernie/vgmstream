@@ -1,5 +1,12 @@
 #pragma once
 
+#include <msclr/marshal.h>
+
+extern "C" {
+#include "../src/vgmstream.h"
+#include "../src/util.h"
+}
+
 namespace exportloop_gui {
 
 	using namespace System;
@@ -8,7 +15,9 @@ namespace exportloop_gui {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::IO;
 
+	using namespace msclr::interop;
 	using DR = System::Windows::Forms::DialogResult;
 
 	/// <summary>
@@ -136,6 +145,7 @@ namespace exportloop_gui {
 			this->btnStart->TabIndex = 25;
 			this->btnStart->Text = L"Start";
 			this->btnStart->UseVisualStyleBackColor = true;
+			this->btnStart->Click += gcnew System::EventHandler(this, &MainForm::btnStart_Click);
 			// 
 			// btnBrowse
 			// 
@@ -146,6 +156,7 @@ namespace exportloop_gui {
 			this->btnBrowse->TabIndex = 22;
 			this->btnBrowse->Text = L"Browse";
 			this->btnBrowse->UseVisualStyleBackColor = true;
+			this->btnBrowse->Click += gcnew System::EventHandler(this, &MainForm::btnBrowse_Click);
 			// 
 			// txtOutputDir
 			// 
@@ -180,6 +191,7 @@ namespace exportloop_gui {
 			this->btnAbout->TabIndex = 24;
 			this->btnAbout->Text = L"About";
 			this->btnAbout->UseVisualStyleBackColor = true;
+			this->btnAbout->Click += gcnew System::EventHandler(this, &MainForm::btnAbout_Click);
 			// 
 			// chk0ToEnd
 			// 
@@ -238,6 +250,7 @@ namespace exportloop_gui {
 			this->btnOpenFolder->TabIndex = 23;
 			this->btnOpenFolder->Text = L"Open";
 			this->btnOpenFolder->UseVisualStyleBackColor = true;
+			this->btnOpenFolder->Click += gcnew System::EventHandler(this, &MainForm::btnOpenFolder_Click);
 			// 
 			// MainForm
 			// 
@@ -289,6 +302,101 @@ namespace exportloop_gui {
 				for each (String^ filename in filenames) {
 					listView1->Items->Add(filename);
 				}
+			}
+		}
+		void btnBrowse_Click(Object^ sender, EventArgs^ e) {
+			if (!String::IsNullOrWhiteSpace(txtOutputDir->Text)) {
+				folderBrowserDialog1->SelectedPath = txtOutputDir->Text;
+			}
+			if (folderBrowserDialog1->ShowDialog() == DR::OK) {
+				txtOutputDir->Text = folderBrowserDialog1->SelectedPath;
+			}
+		}
+		void btnOpenFolder_Click(Object^ sender, EventArgs^ e) {
+			MessageBox::Show("Not implemented");
+		}
+		void btnAbout_Click(Object^ sender, EventArgs^ e) {
+			MessageBox::Show("BRSTM to WAV Converter 2.0\n"
+				"© 2015 libertyernie\n"
+				"\n"
+				"https://github.com/libertyernie/vgmstream\n"
+				"\n"
+				"TODO: put license here. All rights reserved.");
+		}
+		void btnStart_Click(Object^ sender, EventArgs^ e) {
+			String^ outputDir = txtOutputDir->Text;
+			if (!Directory::Exists(outputDir)) {
+				MessageBox::Show("The specified output directory does not exist.", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+
+			marshal_context context;
+
+			for each (ListViewItem^ item in listView1->Items) {
+				String^ inputpath = item->Text;
+				VGMSTREAM* vgmstream = init_vgmstream(context.marshal_as<const char*>(inputpath));
+
+				if (vgmstream == NULL) {
+					MessageBox::Show("Could not open file: " + inputpath, "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+					continue;
+				}
+
+				sample* samples = (sample*)malloc(sizeof(sample) * vgmstream->channels * vgmstream->num_samples);
+				render_vgmstream(samples, vgmstream->num_samples, vgmstream);
+				swap_samples_le(samples, vgmstream->channels * vgmstream->num_samples);
+
+				uint8_t* wavbuffer = (uint8_t*)malloc(0x2C);
+
+				String^ filename_without_ext = Path::GetFileNameWithoutExtension(inputpath);
+
+				if (chk0ToStart->Checked) {
+					String^ outputfile = filename_without_ext + " (beginning).wav";
+
+					FILE* f = fopen(context.marshal_as<const char*>(outputfile), "wb");
+					make_wav_header(wavbuffer,
+						vgmstream->loop_start_sample,
+						vgmstream->sample_rate,
+						vgmstream->channels);
+					fwrite(wavbuffer, 0x2C, 1, f);
+					fwrite(samples,
+						sizeof(sample),
+						vgmstream->loop_start_sample * vgmstream->channels,
+						f);
+					fclose(f);
+				}
+				if (chkStartToEnd->Checked) {
+					String^ outputfile = filename_without_ext + " (loop).wav";
+
+					FILE* f = fopen(context.marshal_as<const char*>(outputfile), "wb");
+					make_wav_header(wavbuffer,
+						vgmstream->loop_end_sample - vgmstream->loop_start_sample,
+						vgmstream->sample_rate,
+						vgmstream->channels);
+					fwrite(wavbuffer, 0x2C, 1, f);
+					fwrite(samples + vgmstream->loop_start_sample * vgmstream->channels,
+						sizeof(sample),
+						(vgmstream->loop_end_sample - vgmstream->loop_start_sample) * vgmstream->channels,
+						f);
+					fclose(f);
+				}
+				if (chk0ToEnd->Checked) {
+					String^ outputfile = filename_without_ext + " (beginning).wav";
+
+					FILE* f = fopen(context.marshal_as<const char*>(outputfile), "wb");
+					make_wav_header(wavbuffer,
+						vgmstream->num_samples,
+						vgmstream->sample_rate,
+						vgmstream->channels);
+					fwrite(wavbuffer, 0x2C, 1, f);
+					fwrite(samples,
+						sizeof(sample),
+						vgmstream->num_samples * vgmstream->channels,
+						f);
+					fclose(f);
+				}
+
+				free(wavbuffer);
+				free(samples);
+				close_vgmstream(vgmstream);
 			}
 		}
 	};
