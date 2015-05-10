@@ -4,6 +4,8 @@
 *.vspscc
 *.sdf
 *.opensdf
+*.aps
+ipch
 /Debug
 /Release
 /NoAacMp4
@@ -15,6 +17,9 @@
 /exportloop/Debug
 /exportloop/Release
 /exportloop/NoAacMp4
+/exportloop_gui/Debug
+/exportloop_gui/Release
+/exportloop_gui/NoAacMp4
 /fb2k/Debug
 /fb2k/Release
 /fb2k/NoAacMp4
