@@ -1,6 +1,5 @@
 // exportloop_gui.cpp : main project file.
 
-#include "stdafx.h"
 #include "MainForm.h"
 
 using namespace System;
