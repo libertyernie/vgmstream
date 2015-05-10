@@ -29,9 +29,8 @@ namespace exportloop_gui {
 		MainForm(void)
 		{
 			InitializeComponent();
-			//
-			//TODO: Add the constructor code here
-			//
+
+			this->txtOutputDir->Text = Environment::CurrentDirectory;
 		}
 
 	protected:
@@ -327,6 +326,7 @@ namespace exportloop_gui {
 			String^ outputDir = txtOutputDir->Text;
 			if (!Directory::Exists(outputDir)) {
 				MessageBox::Show("The specified output directory does not exist.", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+				return;
 			}
 
 			marshal_context context;
@@ -349,7 +349,7 @@ namespace exportloop_gui {
 				String^ filename_without_ext = Path::GetFileNameWithoutExtension(inputpath);
 
 				if (chk0ToStart->Checked) {
-					String^ outputfile = filename_without_ext + " (beginning).wav";
+					String^ outputfile = outputDir + Path::DirectorySeparatorChar + filename_without_ext + " (beginning).wav";
 
 					FILE* f = fopen(context.marshal_as<const char*>(outputfile), "wb");
 					make_wav_header(wavbuffer,
@@ -364,7 +364,7 @@ namespace exportloop_gui {
 					fclose(f);
 				}
 				if (chkStartToEnd->Checked) {
-					String^ outputfile = filename_without_ext + " (loop).wav";
+					String^ outputfile = outputDir + Path::DirectorySeparatorChar + filename_without_ext + " (loop).wav";
 
 					FILE* f = fopen(context.marshal_as<const char*>(outputfile), "wb");
 					make_wav_header(wavbuffer,
@@ -379,7 +379,7 @@ namespace exportloop_gui {
 					fclose(f);
 				}
 				if (chk0ToEnd->Checked) {
-					String^ outputfile = filename_without_ext + " (beginning).wav";
+					String^ outputfile = outputDir + Path::DirectorySeparatorChar + filename_without_ext + ".wav";
 
 					FILE* f = fopen(context.marshal_as<const char*>(outputfile), "wb");
 					make_wav_header(wavbuffer,
