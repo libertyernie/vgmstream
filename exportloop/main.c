@@ -99,6 +99,8 @@ int main(int argc, char** argv) {
 			sample* samples = (sample*)malloc(sizeof(sample) * vgmstream->channels * vgmstream->num_samples);
 			render_vgmstream(samples, vgmstream->num_samples, vgmstream);
 
+			swap_samples_le(samples, vgmstream->channels * vgmstream->num_samples);
+
 			uint8_t* wavbuffer = (uint8_t*)malloc(0x2C);
 			char* outfile = (char*)malloc(strlen(infile_noext) + 20);
 
