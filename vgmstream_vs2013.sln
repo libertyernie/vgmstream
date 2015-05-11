@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exportloop", "exportloop\ex
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exportloop_gui", "exportloop_gui\exportloop_gui.vcxproj", "{19D34EDE-9A48-4654-AE71-64064C3B4081}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VGMStreamCLR", "VGMStreamCLR\VGMStreamCLR.vcxproj", "{355BBC3F-E9DA-4B32-98FB-704ABAF70239}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -50,6 +52,12 @@ Global
 		{19D34EDE-9A48-4654-AE71-64064C3B4081}.NoAacMp4|Win32.Build.0 = NoAacMp4|Win32
 		{19D34EDE-9A48-4654-AE71-64064C3B4081}.Release|Win32.ActiveCfg = Release|Win32
 		{19D34EDE-9A48-4654-AE71-64064C3B4081}.Release|Win32.Build.0 = Release|Win32
+		{355BBC3F-E9DA-4B32-98FB-704ABAF70239}.Debug|Win32.ActiveCfg = Debug|Win32
+		{355BBC3F-E9DA-4B32-98FB-704ABAF70239}.Debug|Win32.Build.0 = Debug|Win32
+		{355BBC3F-E9DA-4B32-98FB-704ABAF70239}.NoAacMp4|Win32.ActiveCfg = NoAacMp4|Win32
+		{355BBC3F-E9DA-4B32-98FB-704ABAF70239}.NoAacMp4|Win32.Build.0 = NoAacMp4|Win32
+		{355BBC3F-E9DA-4B32-98FB-704ABAF70239}.Release|Win32.ActiveCfg = Release|Win32
+		{355BBC3F-E9DA-4B32-98FB-704ABAF70239}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
