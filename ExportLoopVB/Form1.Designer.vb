@@ -37,6 +37,9 @@ Partial Class Form1
         Me.chkStartToEnd = New System.Windows.Forms.CheckBox()
         Me.chk0ToEnd = New System.Windows.Forms.CheckBox()
         Me.btnAbout = New System.Windows.Forms.Button()
+        Me.ProgressBar1 = New System.Windows.Forms.ProgressBar()
+        Me.btnCancel = New System.Windows.Forms.Button()
+        Me.lblCurrentFile = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'ListView1
@@ -185,11 +188,45 @@ Partial Class Form1
         Me.btnAbout.Text = "About"
         Me.btnAbout.UseVisualStyleBackColor = True
         '
+        'ProgressBar1
+        '
+        Me.ProgressBar1.Location = New System.Drawing.Point(12, 326)
+        Me.ProgressBar1.Name = "ProgressBar1"
+        Me.ProgressBar1.Size = New System.Drawing.Size(279, 23)
+        Me.ProgressBar1.TabIndex = 13
+        Me.ProgressBar1.Visible = False
+        '
+        'btnCancel
+        '
+        Me.btnCancel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnCancel.Location = New System.Drawing.Point(297, 326)
+        Me.btnCancel.Name = "btnCancel"
+        Me.btnCancel.Size = New System.Drawing.Size(75, 23)
+        Me.btnCancel.TabIndex = 14
+        Me.btnCancel.Text = "Cancel"
+        Me.btnCancel.UseVisualStyleBackColor = True
+        Me.btnCancel.Visible = False
+        '
+        'lblCurrentFile
+        '
+        Me.lblCurrentFile.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.lblCurrentFile.Location = New System.Drawing.Point(12, 300)
+        Me.lblCurrentFile.Margin = New System.Windows.Forms.Padding(3)
+        Me.lblCurrentFile.Name = "lblCurrentFile"
+        Me.lblCurrentFile.Size = New System.Drawing.Size(360, 20)
+        Me.lblCurrentFile.TabIndex = 15
+        Me.lblCurrentFile.Text = "Exporting:"
+        Me.lblCurrentFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblCurrentFile.Visible = False
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(384, 361)
+        Me.Controls.Add(Me.lblCurrentFile)
+        Me.Controls.Add(Me.btnCancel)
+        Me.Controls.Add(Me.ProgressBar1)
         Me.Controls.Add(Me.btnAbout)
         Me.Controls.Add(Me.chk0ToEnd)
         Me.Controls.Add(Me.chkStartToEnd)
@@ -224,5 +261,8 @@ Partial Class Form1
     Friend WithEvents chkStartToEnd As System.Windows.Forms.CheckBox
     Friend WithEvents chk0ToEnd As System.Windows.Forms.CheckBox
     Friend WithEvents btnAbout As System.Windows.Forms.Button
+    Friend WithEvents ProgressBar1 As System.Windows.Forms.ProgressBar
+    Friend WithEvents btnCancel As System.Windows.Forms.Button
+    Friend WithEvents lblCurrentFile As System.Windows.Forms.Label
 
 End Class

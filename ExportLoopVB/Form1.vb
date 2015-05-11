@@ -1,8 +1,18 @@
 ﻿Imports System.IO
-Imports BrawlLib.SSBB.ResourceNodes
-Imports System.Audio
+Imports VGMStreamCLR
 
 Public Class Form1
+    Private b As Boolean
+
+    Private Property ExportCancelled As Boolean
+        Get
+            Return b
+        End Get
+        Set(value As Boolean)
+            b = value
+        End Set
+    End Property
+
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         txtOutputDir.Text = Environment.CurrentDirectory
     End Sub
@@ -51,60 +61,80 @@ Public Class Form1
             Exit Sub
         End If
 
-        Dim wavsPerBrstm As Integer
-        If chk0ToStart.Checked Then
-            wavsPerBrstm += 1
-        End If
-        If chkStartToEnd.Checked Then
-            wavsPerBrstm += 1
-        End If
-        If chk0ToEnd.Checked Then
-            wavsPerBrstm += 1
-        End If
+        ExportCancelled = False
 
-        Using pw As New ProgressWindow(Me, "Progress", "Caption", True)
-            pw.Begin(0, wavsPerBrstm * ListView1.Items.Count, 0)
+        ProgressBar1.Value = 0
+        ProgressBar1.Maximum = ListView1.Items.Count
 
-            For Each item As ListViewItem In ListView1.Items
-                If pw.Cancelled Then
-                    pw.Finish()
+        Label1.Visible = False
+        txtOutputDir.Visible = False
+        btnBrowse.Visible = False
+        btnOpenFolder.Visible = False
+        btnAbout.Visible = False
+        btnStart.Visible = False
+        lblCurrentFile.Visible = True
+        ProgressBar1.Visible = True
+        btnCancel.Visible = True
+
+        Dim filenames As New List(Of String)
+        For Each item As ListViewItem In ListView1.Items
+            filenames.Add(item.Text)
+        Next
+        Task.Factory.StartNew(Sub()
+                                  ExportSub(filenames)
+                              End Sub)
+    End Sub
+
+    Private Sub ExportSub(filenames As IEnumerable(Of String))
+        Try
+            For Each infile As String In filenames
+                If ExportCancelled Then
                     Exit For
                 End If
 
-                Using node As ResourceNode = NodeFactory.FromFile(Nothing, item.Text)
-                    If Not TypeOf node Is RSTMNode Then
-                        Continue For
-                    End If
+                Dim name As String = Path.GetFileNameWithoutExtension(infile)
+                Me.Invoke(New Action(Sub()
+                                         lblCurrentFile.Text = Path.GetFileName(name)
+                                     End Sub))
 
-                    Dim brstm = CType(node, RSTMNode)
-                    Dim audioStream = brstm.CreateStreams().First()
+                Using audio As New VGMAudio(infile)
+                    Dim rendered As New VGMRenderedAudio(audio)
+
                     If chk0ToStart.Checked Then
-                        Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & brstm.Name & " (beginning).wav"
-                        pw.Caption = Path.GetFileName(filename)
-                        WAV.ToFile(audioStream,
-                                   filename,
-                                   0,
-                                   brstm.LoopStartSample)
-                        pw.Update(pw.CurrentValue + 1)
+                        Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & name & " (beginning).wav"
+                        File.WriteAllBytes(filename, rendered.ExportWav(0, audio.LoopStart))
                     End If
                     If chkStartToEnd.Checked Then
-                        Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & brstm.Name & " (loop).wav"
-                        pw.Caption = Path.GetFileName(filename)
-                        WAV.ToFile(audioStream,
-                                   filename,
-                                   brstm.LoopStartSample)
-                        pw.Update(pw.CurrentValue + 1)
+                        Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & name & " (loop).wav"
+                        File.WriteAllBytes(filename, rendered.ExportWav(audio.LoopStart, audio.LoopEnd))
                     End If
                     If chk0ToEnd.Checked Then
-                        Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & brstm.Name & ".wav"
-                        pw.Caption = Path.GetFileName(filename)
-                        WAV.ToFile(audioStream,
-                                   filename)
-                        pw.Update(pw.CurrentValue + 1)
+                        Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & name & ".wav"
+                        File.WriteAllBytes(filename, rendered.ExportWav())
                     End If
                 End Using
+
+                Me.BeginInvoke(New Action(Sub()
+                                              ProgressBar1.Value += 1
+                                          End Sub))
             Next
-        End Using
+        Catch e As Exception
+            MessageBox.Show(e.Message, e.GetType().ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+
+        Me.BeginInvoke(New Action(AddressOf FinishExportSub))
+    End Sub
+
+    Private Sub FinishExportSub()
+        lblCurrentFile.Visible = False
+        ProgressBar1.Visible = False
+        btnCancel.Visible = False
+        Label1.Visible = True
+        txtOutputDir.Visible = True
+        btnBrowse.Visible = True
+        btnOpenFolder.Visible = True
+        btnAbout.Visible = True
+        btnStart.Visible = True
     End Sub
 
     Private Sub btnOpenFolder_Click(sender As Object, e As EventArgs) Handles btnOpenFolder.Click
@@ -120,5 +150,9 @@ Public Class Form1
         Dim N = Environment.NewLine
         MessageBox.Show("BRSTM to WAV Converter" & N & "© 2015 libertyernie" & N & N & "https://github.com/libertyernie/BrstmToWav" & N & N &
                         "This program is provided as-is without any warranty, implied or otherwise. By using this program, the end user agrees to take full responsibility regarding its proper and lawful use. The authors/hosts/distributors cannot be held responsible for any damage resulting in the use of this program, nor can they be held accountable for the manner in which it is used.")
+    End Sub
+
+    Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
+        ExportCancelled = True
     End Sub
 End Class

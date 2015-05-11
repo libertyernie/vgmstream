@@ -17,7 +17,7 @@ namespace VGMStreamCLR {
 			original->Render(pin, sample_count);
 		}
 
-		VGMRenderedAudio(VGMAudio^ original) : VGMRenderedAudio(original, original->Looped ? original->LoopEnd : original->NumSamples) {}
+		VGMRenderedAudio(VGMAudio^ original) : VGMRenderedAudio(original, Math::Max(original->LoopEnd, original->NumSamples)) {}
 
 		property VGMAudio^ Original {
 			VGMAudio^ get() {
@@ -41,18 +41,6 @@ namespace VGMStreamCLR {
 
 		array<uint8_t>^ ExportWav() {
 			return ExportWav(0, samples->Length);
-		}
-
-		/* dispose: call finalizer */
-		~VGMRenderedAudio() {
-			if (is_disposed) return;
-			this->!VGMRenderedAudio();
-			is_disposed = true;
-		}
-
-		/* finalize */
-		!VGMRenderedAudio() {
-			delete original;
 		}
 	};
 }
