@@ -21,11 +21,16 @@
     <ClCompile Include="VGMStreamException.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="VGMStream.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="VGMStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VGMAudio.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="VGMRenderedAudio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

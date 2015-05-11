@@ -13,7 +13,7 @@ namespace VGMStreamCLR {
 	using namespace System;
 	using namespace msclr::interop;
 
-	public ref class VGMStream {
+	public ref class VGMAudio {
 	private:
 		VGMSTREAM* instance;
 		marshal_context mcontext;
@@ -39,9 +39,19 @@ namespace VGMStreamCLR {
 				return instance->num_samples;
 			}
 		}
+		property int SampleRate {
+			int get() {
+				return instance->sample_rate;
+			}
+		}
+		property int Channels {
+			int get() {
+				return instance->channels;
+			}
+		}
 
 		/* do format detection, return object holding a pointer to a usable VGMSTREAM, or throw VGMStreamException on failure */
-		VGMStream(String^ filename) : is_disposed(false) {
+		VGMAudio(String^ filename) : is_disposed(false) {
 			instance = init_vgmstream(mcontext.marshal_as<const char*>(filename));
 			if (instance == nullptr) {
 				throw gcnew VGMStreamException("A null pointer was returned from init_vgmstream");
@@ -59,11 +69,8 @@ namespace VGMStreamCLR {
 		}
 
 		/* render! */
-		array<sample>^ Render(int32_t sample_count) {
-			array<sample>^ arr = gcnew array<sample>(sample_count * instance->channels);
-			pin_ptr<sample> pin = &arr[0];
-			render_vgmstream(pin, sample_count, instance);
-			return arr;
+		void Render(sample* buffer, int32_t sample_count) {
+			render_vgmstream(buffer, sample_count, instance);
 		}
 
 		/* make a header for PCM .wav */
@@ -74,36 +81,15 @@ namespace VGMStreamCLR {
 			return arr;
 		}
 
-		/* make a header for PCM .wav */
-		array<uint8_t>^ MakeWavHeader(int32_t sample_count) {
-			return VGMStream::MakeWavHeader(sample_count, instance->sample_rate, instance->channels);
-		}
-
-		/* Export the .wav header and samples together */
-		array<uint8_t>^ ExportWav() {
-			return this->ExportWav(instance->loop_flag ? instance->loop_end_sample : instance->num_samples);
-		}
-
-		/* Export the .wav header and samples together */
-		array<uint8_t>^ ExportWav(int32_t sample_count) {
-			array<uint8_t>^ arr = gcnew array<uint8_t>(0x2C + sizeof(sample) * sample_count * instance->channels);
-			pin_ptr<uint8_t> header = &arr[0];
-			pin_ptr<uint8_t> data = &arr[0x2C];
-
-			make_wav_header(header, sample_count, instance->sample_rate, instance->channels);
-			render_vgmstream((sample*)data, sample_count, instance);
-			return arr;
-		}
-
 		/* dispose: call finalizer to close/deallocate VGMSTREAM */
-		~VGMStream() {
+		~VGMAudio() {
 			if (is_disposed) return;
-			this->!VGMStream();
+			this->!VGMAudio();
 			is_disposed = true;
 		}
 
 		/* finalize: close/deallocate VGMSTREAM */
-		!VGMStream() {
+		!VGMAudio() {
 			close_vgmstream(instance);
 		}
 	};

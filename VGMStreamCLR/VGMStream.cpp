@@ -1,2 +1,3 @@
 #include "VGMStreamException.h"
-#include "VGMStream.h"
+#include "VGMAudio.h"
+#include "VGMRenderedAudio.h"

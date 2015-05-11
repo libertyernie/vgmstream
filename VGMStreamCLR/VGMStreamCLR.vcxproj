@@ -110,7 +110,7 @@
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="VGMStream.cpp" />
-    <ClCompile Include="VGMStream.h" />
+    <ClCompile Include="VGMAudio.h" />
     <ClCompile Include="VGMStreamException.h" />
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +120,9 @@
     <ProjectReference Include="..\src\libvgmstream.vcxproj">
       <Project>{54a6ad11-5369-4895-a06f-e255abb99b11}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="VGMRenderedAudio.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

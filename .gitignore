@@ -29,6 +29,9 @@ ipch
 /src/Debug
 /src/Release
 /src/NoAacMp4
+/VGMStreamCLR/Debug
+/VGMStreamCLR/Release
+/VGMStreamCLR/NoAacMp4
 /winamp/Debug
 /winamp/Release
 /winamp/NoAacMp4
