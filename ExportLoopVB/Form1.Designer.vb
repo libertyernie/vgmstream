@@ -241,7 +241,7 @@ Partial Class Form1
         Me.Controls.Add(Me.btnAdd)
         Me.Controls.Add(Me.ListView1)
         Me.Name = "Form1"
-        Me.Text = "BRSTM to WAV Converter"
+        Me.Text = "ExportLoop"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

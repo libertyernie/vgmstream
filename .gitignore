@@ -20,9 +20,7 @@ ipch
 /exportloop_gui/Debug
 /exportloop_gui/Release
 /exportloop_gui/NoAacMp4
-/ExportLoopVB/Debug
-/ExportLoopVB/Release
-/ExportLoopVB/NoAacMp4
+/ExportLoopVB/obj
 /fb2k/Debug
 /fb2k/Release
 /fb2k/NoAacMp4

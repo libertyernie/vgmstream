@@ -26,21 +26,23 @@ namespace VGMStreamCLR {
 		}
 
 		array<uint8_t>^ ExportWav(int32_t start_sample, int32_t num_samples) {
-			if (start_sample + num_samples > samples->Length) {
+			if (start_sample + num_samples > samples->Length / original->Channels) {
 				throw gcnew VGMStreamException("Sample index out of range");
 			}
 
-			array<uint8_t>^ arr = gcnew array<uint8_t>(0x2C + num_samples * sizeof(sample));
+			array<uint8_t>^ arr = gcnew array<uint8_t>(0x2C + num_samples * original->Channels * sizeof(sample));
 			pin_ptr<uint8_t> pin = &arr[0];
-			make_wav_header(pin, samples->Length, original->SampleRate, original->Channels);
+			make_wav_header(pin, num_samples, original->SampleRate, original->Channels);
 
 			pin_ptr<sample> sample_pin = &samples[0];
-			memcpy(pin + 0x2C, sample_pin + start_sample, num_samples);
+			memcpy(pin + 0x2C,
+				sample_pin + (start_sample * original->Channels),
+				num_samples * original->Channels * sizeof(sample));
 			return arr;
 		}
 
 		array<uint8_t>^ ExportWav() {
-			return ExportWav(0, samples->Length);
+			return ExportWav(0, samples->Length / original->Channels);
 		}
 	};
 }

@@ -100,18 +100,22 @@ Public Class Form1
                 Using audio As New VGMAudio(infile)
                     Dim rendered As New VGMRenderedAudio(audio)
 
-                    If chk0ToStart.Checked Then
-                        Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & name & " (beginning).wav"
-                        File.WriteAllBytes(filename, rendered.ExportWav(0, audio.LoopStart))
-                    End If
-                    If chkStartToEnd.Checked Then
-                        Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & name & " (loop).wav"
-                        File.WriteAllBytes(filename, rendered.ExportWav(audio.LoopStart, audio.LoopEnd))
-                    End If
-                    If chk0ToEnd.Checked Then
-                        Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & name & ".wav"
-                        File.WriteAllBytes(filename, rendered.ExportWav())
-                    End If
+                    Try
+                        If chk0ToStart.Checked Then
+                            Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & name & " (beginning).wav"
+                            File.WriteAllBytes(filename, rendered.ExportWav(0, audio.LoopStart))
+                        End If
+                        If chkStartToEnd.Checked Then
+                            Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & name & " (loop).wav"
+                            File.WriteAllBytes(filename, rendered.ExportWav(audio.LoopStart, audio.LoopEnd - audio.LoopStart))
+                        End If
+                        If chk0ToEnd.Checked Then
+                            Dim filename = txtOutputDir.Text & Path.DirectorySeparatorChar & name & ".wav"
+                            File.WriteAllBytes(filename, rendered.ExportWav())
+                        End If
+                    Catch e As Exception
+                        MessageBox.Show(e.Message, e.GetType().ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    End Try
                 End Using
 
                 Me.BeginInvoke(New Action(Sub()
@@ -148,8 +152,8 @@ Public Class Form1
 
     Private Sub btnAbout_Click(sender As Object, e As EventArgs) Handles btnAbout.Click
         Dim N = Environment.NewLine
-        MessageBox.Show("BRSTM to WAV Converter" & N & "© 2015 libertyernie" & N & N & "https://github.com/libertyernie/BrstmToWav" & N & N &
-                        "This program is provided as-is without any warranty, implied or otherwise. By using this program, the end user agrees to take full responsibility regarding its proper and lawful use. The authors/hosts/distributors cannot be held responsible for any damage resulting in the use of this program, nor can they be held accountable for the manner in which it is used.")
+        MessageBox.Show("ExportLoop (GUI version)" & N & "© 2015 libertyernie, vgmstream contributors" & N & N & "https://github.com/libertyernie/vgmstream" & N & N &
+                        "TODO: license here.")
     End Sub
 
     Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
