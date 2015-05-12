@@ -11,8 +11,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ext_libs", "ext_libs\ext_li
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exportloop", "exportloop\exportloop.vcxproj", "{575639B5-08B7-4D3F-867D-302892E27CA3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exportloop_gui", "exportloop_gui\exportloop_gui.vcxproj", "{19D34EDE-9A48-4654-AE71-64064C3B4081}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -44,12 +42,6 @@ Global
 		{575639B5-08B7-4D3F-867D-302892E27CA3}.NoAacMp4|Win32.Build.0 = NoAacMp4|Win32
 		{575639B5-08B7-4D3F-867D-302892E27CA3}.Release|Win32.ActiveCfg = Release|Win32
 		{575639B5-08B7-4D3F-867D-302892E27CA3}.Release|Win32.Build.0 = Release|Win32
-		{19D34EDE-9A48-4654-AE71-64064C3B4081}.Debug|Win32.ActiveCfg = Debug|Win32
-		{19D34EDE-9A48-4654-AE71-64064C3B4081}.Debug|Win32.Build.0 = Debug|Win32
-		{19D34EDE-9A48-4654-AE71-64064C3B4081}.NoAacMp4|Win32.ActiveCfg = NoAacMp4|Win32
-		{19D34EDE-9A48-4654-AE71-64064C3B4081}.NoAacMp4|Win32.Build.0 = NoAacMp4|Win32
-		{19D34EDE-9A48-4654-AE71-64064C3B4081}.Release|Win32.ActiveCfg = Release|Win32
-		{19D34EDE-9A48-4654-AE71-64064C3B4081}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
