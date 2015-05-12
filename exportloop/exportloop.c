@@ -4,9 +4,11 @@
 #include "../src/util.h"
 
 char* remove_extension_and_path(const char* input) {
+	const char* ptr;
+	
 	// Loop through characters backwards to find extension
 	const char* end = input + strlen(input);
-	for (const char* ptr = end; ptr >= input; ptr--) {
+	for (ptr = end; ptr >= input; ptr--) {
 		if (*ptr == '/' || *ptr == '\\') {
 			// No extension
 			break;
@@ -19,7 +21,7 @@ char* remove_extension_and_path(const char* input) {
 
 	// Loop through characters backwards to find slash/backslash
 	const char* start = input;
-	for (const char* ptr = end; ptr >= input; ptr--) {
+	for (ptr = end; ptr >= input; ptr--) {
 		if (*ptr == '/' || *ptr == '\\') {
 			// Found directory separator
 			start = ptr + 1;
@@ -37,6 +39,7 @@ char* remove_extension_and_path(const char* input) {
 
 int usage(int retval, char* name) {
 	fprintf(stderr, "exportloop\n"
+		"https://github.com/libertyernie/vgmstream\n"
 		"\n"
 		"Usage: %s [-0L] [-LE] [-0E] {files ...}\n", name);
 	return retval;
@@ -83,7 +86,8 @@ int main(int argc, char** argv) {
 	char** filenames = argv + i;
 
 	int errors = 0;
-	for (int j = 0; j < filename_count; j++) {
+	int j;
+	for (j = 0; j < filename_count; j++) {
 		char* infile = filenames[j];
 
 		VGMSTREAM* vgmstream = init_vgmstream(infile);
