@@ -98,19 +98,24 @@ Public Class Form1
             Exit Sub
         End If
 
+        ProgressBar1.Value = 0
+        ProgressBar1.Maximum = ListView1.Items.Count * 10
+
+        pnlReady.Visible = False
+        pnlInProgress.Visible = True
+
         Dim args As String = ""
 
-        Dim wavsPerBrstm As Integer
         If chk0ToStart.Checked Then
-            wavsPerBrstm += 1
+            ProgressBar1.Maximum += ListView1.Items.Count * 2
             args += "-0L "
         End If
         If chkStartToEnd.Checked Then
-            wavsPerBrstm += 1
+            ProgressBar1.Maximum += ListView1.Items.Count * 2
             args += "-LE "
         End If
         If chk0ToEnd.Checked Then
-            wavsPerBrstm += 1
+            ProgressBar1.Maximum += ListView1.Items.Count * 2
             args += "-0E "
         End If
 
@@ -133,17 +138,48 @@ Public Class Form1
 
         Dim p As Process = Process.Start(startInfo)
         Dim out As StreamReader = p.StandardOutput
+        Dim err As StreamReader = p.StandardError
+        p.EnableRaisingEvents = True
 
-        Dim s As New Stopwatch
-        s.Start()
+        AddHandler p.Exited, AddressOf ProcessFinished
+        If p.HasExited Then
+            ProcessFinished(p, Nothing)
+        End If
 
-        While Not out.EndOfStream
-            Console.WriteLine(s.Elapsed.ToString & Me.Text)
-            s.Restart()
-            Me.Text = out.ReadLine()
-        End While
-        p.WaitForExit()
-        MessageBox.Show(p.ExitCode)
+        Dim t As New Task(Sub()
+                              While Not out.EndOfStream
+                                  Dim text = out.ReadLine
+                                  Console.WriteLine(text)
+                                  Me.BeginInvoke(New Action(Sub()
+                                                                lblCurrentFile.Text = text
+                                                                If text.StartsWith("Render") Then
+                                                                    ProgressBar1.Value += 10
+                                                                ElseIf text.StartsWith("Output") Then
+                                                                    ProgressBar1.Value += 2
+                                                                End If
+                                                            End Sub))
+                              End While
+                          End Sub)
+        t.Start()
+        Dim t2 As New Task(Sub()
+                               While Not err.EndOfStream
+                                   Dim text = err.ReadLine
+                                   Console.Error.WriteLine(text)
+                                   MessageBox.Show(text)
+                               End While
+                           End Sub)
+        t2.Start()
+    End Sub
+
+    Private Sub ProcessFinished(sender As Object, e As EventArgs)
+        Dim p As Process = CType(sender, Process)
+        Me.Invoke(Sub()
+                      If p.ExitCode = 0 Then
+                          ListView1.Items.Clear()
+                      End If
+                      pnlInProgress.Visible = False
+                      pnlReady.Visible = True
+                  End Sub)
     End Sub
 
     Private Sub btnOpenFolder_Click(sender As Object, e As EventArgs) Handles btnOpenFolder.Click
@@ -157,7 +193,17 @@ Public Class Form1
 
     Private Sub btnAbout_Click(sender As Object, e As EventArgs) Handles btnAbout.Click
         Dim N = Environment.NewLine
-        MessageBox.Show("BRSTM to WAV Converter" & N & "© 2015 libertyernie" & N & N & "https://github.com/libertyernie/BrstmToWav" & N & N &
-                        "This program is provided as-is without any warranty, implied or otherwise. By using this program, the end user agrees to take full responsibility regarding its proper and lawful use. The authors/hosts/distributors cannot be held responsible for any damage resulting in the use of this program, nor can they be held accountable for the manner in which it is used.")
+        MessageBox.Show("Export Loop VB - version 1.1" & N & "© 2015 libertyernie" & N & N & "https://github.com/libertyernie/vgmstream" & N & N &
+                        "Permission to use, copy, modify, and distribute this software for any " &
+                        "purpose with or without fee is hereby granted, provided that the above " &
+                        "copyright notice and this permission notice appear in all copies." & vbCrLf &
+                        vbCrLf &
+                        "THE SOFTWARE IS PROVIDED ""AS IS"" AND THE AUTHOR DISCLAIMS ALL WARRANTIES " &
+                        "WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF " &
+                        "MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR " &
+                        "ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES " &
+                        "WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN " &
+                        "ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF " &
+                        "OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.")
     End Sub
 End Class

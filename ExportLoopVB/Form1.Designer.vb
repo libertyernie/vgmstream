@@ -29,7 +29,6 @@ Partial Class Form1
         Me.Label1 = New System.Windows.Forms.Label()
         Me.txtOutputDir = New System.Windows.Forms.TextBox()
         Me.btnBrowse = New System.Windows.Forms.Button()
-        Me.btnStart = New System.Windows.Forms.Button()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.btnOpenFolder = New System.Windows.Forms.Button()
         Me.chk0ToStart = New System.Windows.Forms.CheckBox()
@@ -37,6 +36,14 @@ Partial Class Form1
         Me.chkStartToEnd = New System.Windows.Forms.CheckBox()
         Me.chk0ToEnd = New System.Windows.Forms.CheckBox()
         Me.btnAbout = New System.Windows.Forms.Button()
+        Me.pnlReady = New System.Windows.Forms.Panel()
+        Me.pnlInProgress = New System.Windows.Forms.Panel()
+        Me.ProgressBar1 = New System.Windows.Forms.ProgressBar()
+        Me.lblCurrentFile = New System.Windows.Forms.Label()
+        Me.btnStart = New System.Windows.Forms.Button()
+        Me.btnCancel = New System.Windows.Forms.Button()
+        Me.pnlReady.SuspendLayout()
+        Me.pnlInProgress.SuspendLayout()
         Me.SuspendLayout()
         '
         'ListView1
@@ -75,7 +82,7 @@ Partial Class Form1
         'Label1
         '
         Me.Label1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.Label1.Location = New System.Drawing.Point(12, 300)
+        Me.Label1.Location = New System.Drawing.Point(0, 0)
         Me.Label1.Margin = New System.Windows.Forms.Padding(3)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(85, 20)
@@ -87,7 +94,7 @@ Partial Class Form1
         '
         Me.txtOutputDir.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtOutputDir.Location = New System.Drawing.Point(103, 300)
+        Me.txtOutputDir.Location = New System.Drawing.Point(91, 0)
         Me.txtOutputDir.Name = "txtOutputDir"
         Me.txtOutputDir.Size = New System.Drawing.Size(157, 20)
         Me.txtOutputDir.TabIndex = 8
@@ -95,22 +102,12 @@ Partial Class Form1
         'btnBrowse
         '
         Me.btnBrowse.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnBrowse.Location = New System.Drawing.Point(266, 299)
+        Me.btnBrowse.Location = New System.Drawing.Point(254, -1)
         Me.btnBrowse.Name = "btnBrowse"
         Me.btnBrowse.Size = New System.Drawing.Size(50, 21)
         Me.btnBrowse.TabIndex = 9
         Me.btnBrowse.Text = "Browse"
         Me.btnBrowse.UseVisualStyleBackColor = True
-        '
-        'btnStart
-        '
-        Me.btnStart.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnStart.Location = New System.Drawing.Point(297, 326)
-        Me.btnStart.Name = "btnStart"
-        Me.btnStart.Size = New System.Drawing.Size(75, 23)
-        Me.btnStart.TabIndex = 12
-        Me.btnStart.Text = "Start"
-        Me.btnStart.UseVisualStyleBackColor = True
         '
         'OpenFileDialog1
         '
@@ -119,8 +116,8 @@ Partial Class Form1
         '
         'btnOpenFolder
         '
-        Me.btnOpenFolder.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.btnOpenFolder.Location = New System.Drawing.Point(322, 299)
+        Me.btnOpenFolder.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnOpenFolder.Location = New System.Drawing.Point(310, -1)
         Me.btnOpenFolder.Name = "btnOpenFolder"
         Me.btnOpenFolder.Size = New System.Drawing.Size(50, 21)
         Me.btnOpenFolder.TabIndex = 10
@@ -177,34 +174,98 @@ Partial Class Form1
         '
         'btnAbout
         '
-        Me.btnAbout.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnAbout.Location = New System.Drawing.Point(12, 326)
+        Me.btnAbout.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.btnAbout.Location = New System.Drawing.Point(0, 26)
         Me.btnAbout.Name = "btnAbout"
         Me.btnAbout.Size = New System.Drawing.Size(75, 23)
         Me.btnAbout.TabIndex = 11
         Me.btnAbout.Text = "About"
         Me.btnAbout.UseVisualStyleBackColor = True
         '
+        'pnlReady
+        '
+        Me.pnlReady.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.pnlReady.Controls.Add(Me.Label1)
+        Me.pnlReady.Controls.Add(Me.btnAbout)
+        Me.pnlReady.Controls.Add(Me.txtOutputDir)
+        Me.pnlReady.Controls.Add(Me.btnBrowse)
+        Me.pnlReady.Controls.Add(Me.btnOpenFolder)
+        Me.pnlReady.Controls.Add(Me.btnStart)
+        Me.pnlReady.Location = New System.Drawing.Point(12, 300)
+        Me.pnlReady.Name = "pnlReady"
+        Me.pnlReady.Size = New System.Drawing.Size(360, 49)
+        Me.pnlReady.TabIndex = 13
+        '
+        'pnlInProgress
+        '
+        Me.pnlInProgress.Controls.Add(Me.btnCancel)
+        Me.pnlInProgress.Controls.Add(Me.lblCurrentFile)
+        Me.pnlInProgress.Controls.Add(Me.ProgressBar1)
+        Me.pnlInProgress.Location = New System.Drawing.Point(12, 300)
+        Me.pnlInProgress.Name = "pnlInProgress"
+        Me.pnlInProgress.Size = New System.Drawing.Size(360, 49)
+        Me.pnlInProgress.TabIndex = 14
+        Me.pnlInProgress.Visible = False
+        '
+        'ProgressBar1
+        '
+        Me.ProgressBar1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ProgressBar1.Location = New System.Drawing.Point(0, 0)
+        Me.ProgressBar1.Name = "ProgressBar1"
+        Me.ProgressBar1.Size = New System.Drawing.Size(360, 23)
+        Me.ProgressBar1.TabIndex = 0
+        '
+        'lblCurrentFile
+        '
+        Me.lblCurrentFile.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.lblCurrentFile.Location = New System.Drawing.Point(0, 26)
+        Me.lblCurrentFile.Name = "lblCurrentFile"
+        Me.lblCurrentFile.Size = New System.Drawing.Size(279, 23)
+        Me.lblCurrentFile.TabIndex = 1
+        Me.lblCurrentFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'btnStart
+        '
+        Me.btnStart.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnStart.Location = New System.Drawing.Point(285, 26)
+        Me.btnStart.Name = "btnStart"
+        Me.btnStart.Size = New System.Drawing.Size(75, 23)
+        Me.btnStart.TabIndex = 12
+        Me.btnStart.Text = "Start"
+        Me.btnStart.UseVisualStyleBackColor = True
+        '
+        'btnCancel
+        '
+        Me.btnCancel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnCancel.Location = New System.Drawing.Point(285, 26)
+        Me.btnCancel.Name = "btnCancel"
+        Me.btnCancel.Size = New System.Drawing.Size(75, 23)
+        Me.btnCancel.TabIndex = 13
+        Me.btnCancel.Text = "Cancel"
+        Me.btnCancel.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(384, 361)
-        Me.Controls.Add(Me.btnAbout)
+        Me.Controls.Add(Me.pnlInProgress)
+        Me.Controls.Add(Me.pnlReady)
         Me.Controls.Add(Me.chk0ToEnd)
         Me.Controls.Add(Me.chkStartToEnd)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.chk0ToStart)
-        Me.Controls.Add(Me.btnOpenFolder)
-        Me.Controls.Add(Me.btnStart)
-        Me.Controls.Add(Me.btnBrowse)
-        Me.Controls.Add(Me.txtOutputDir)
-        Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.btnRemove)
         Me.Controls.Add(Me.btnAdd)
         Me.Controls.Add(Me.ListView1)
         Me.Name = "Form1"
         Me.Text = "Export Loop VB"
+        Me.pnlReady.ResumeLayout(False)
+        Me.pnlReady.PerformLayout()
+        Me.pnlInProgress.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -216,7 +277,6 @@ Partial Class Form1
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents txtOutputDir As System.Windows.Forms.TextBox
     Friend WithEvents btnBrowse As System.Windows.Forms.Button
-    Friend WithEvents btnStart As System.Windows.Forms.Button
     Friend WithEvents OpenFileDialog1 As System.Windows.Forms.OpenFileDialog
     Friend WithEvents btnOpenFolder As System.Windows.Forms.Button
     Friend WithEvents chk0ToStart As System.Windows.Forms.CheckBox
@@ -224,5 +284,11 @@ Partial Class Form1
     Friend WithEvents chkStartToEnd As System.Windows.Forms.CheckBox
     Friend WithEvents chk0ToEnd As System.Windows.Forms.CheckBox
     Friend WithEvents btnAbout As System.Windows.Forms.Button
+    Friend WithEvents pnlReady As System.Windows.Forms.Panel
+    Friend WithEvents btnStart As System.Windows.Forms.Button
+    Friend WithEvents pnlInProgress As System.Windows.Forms.Panel
+    Friend WithEvents btnCancel As System.Windows.Forms.Button
+    Friend WithEvents lblCurrentFile As System.Windows.Forms.Label
+    Friend WithEvents ProgressBar1 As System.Windows.Forms.ProgressBar
 
 End Class
