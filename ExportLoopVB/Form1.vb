@@ -100,34 +100,38 @@ Public Class Form1
             Exit Sub
         End If
 
+        Dim render_bars As Integer = 5
+        Dim save_bars As Integer = 1
+
+        Dim multiplier As Integer = render_bars
+
+        Dim args As String = "-vbgui "
+        If chk0ToStart.Checked Then
+            args += " -0L"
+            multiplier += save_bars
+        End If
+        If chkStartToEnd.Checked Then
+            args += " -LE"
+            multiplier += save_bars
+        End If
+        If chk0ToEnd.Checked Then
+            args += " -0E"
+            multiplier += save_bars
+        End If
+
         ProgressBar1.Value = 0
+        ProgressBar1.Maximum = ListView1.Items.Count * multiplier
 
         pnlReady.Visible = False
         pnlInProgress.Visible = True
 
-        Dim args As String = "-vbgui "
-
-        If chk0ToStart.Checked Then
-            args += " -0L"
-        End If
-        If chkStartToEnd.Checked Then
-            args += " -LE"
-        End If
-        If chk0ToEnd.Checked Then
-            args += " -0E"
-        End If
-
+        Dim paths As New List(Of String)
         For Each item As ListViewItem In ListView1.Items
-            If item.Text.Contains("""") Then
-                Throw New Exception("Double quotes are not allowed in pathnames.")
-            End If
-            If item.Text.Contains("\\") Then
-                Throw New Exception("Consecutive backslashes are not allowed in pathnames.")
-            End If
-            args += " """ + item.Text + """"
+            paths.Add(item.Text)
         Next
 
         Dim startInfo As New ProcessStartInfo("exportloop.exe", args)
+        startInfo.RedirectStandardInput = True
         startInfo.RedirectStandardOutput = True
         startInfo.RedirectStandardError = True
         startInfo.ErrorDialog = True
@@ -135,6 +139,7 @@ Public Class Form1
         startInfo.CreateNoWindow = True
 
         currentProcess = Process.Start(startInfo)
+        Dim inp As StreamWriter = currentProcess.StandardInput
         Dim out As StreamReader = currentProcess.StandardOutput
         Dim err As StreamReader = currentProcess.StandardError
         currentProcess.EnableRaisingEvents = True
@@ -149,18 +154,22 @@ Public Class Form1
                     Me.BeginInvoke(New Action(
                                    Sub()
                                        lblCurrentFile.Text = text
-                                       If text.StartsWith("ProgressMax ") Then
-                                           ProgressBar1.Maximum = Integer.Parse(text.Split(" "c)(1))
-                                       ElseIf text.StartsWith("Progress ") Then
-                                           ProgressBar1.Value = Integer.Parse(text.Split(" "c)(1))
-                                       ElseIf text.StartsWith("Finished") Then
-                                           Dim path = text.Split(" "c)(1)
-                                           For Each item As ListViewItem In ListView1.Items
-                                               If item.Text = path Then
-                                                   ListView1.Items.Remove(item)
-                                                   Exit For
-                                               End If
-                                           Next
+                                       If text.StartsWith("vbgui: ") Then
+                                           If text.StartsWith("vbgui: rendering") Then
+                                               ProgressBar1.Value += render_bars
+                                           ElseIf text.StartsWith("vbgui: saving") Then
+                                               ProgressBar1.Value += save_bars
+                                           ElseIf text.StartsWith("vbgui: skipped") Then
+                                               ProgressBar1.Value += multiplier
+                                           ElseIf text.StartsWith("vbgui: finished ") Then
+                                               Dim path = text.Substring("vbgui: finished ".Length)
+                                               For Each item As ListViewItem In ListView1.Items
+                                                   If item.Text = path Then
+                                                       ListView1.Items.Remove(item)
+                                                       Exit For
+                                                   End If
+                                               Next
+                                           End If
                                        Else
                                            lblCurrentFile.Text = text
                                        End If
@@ -168,14 +177,20 @@ Public Class Form1
                 End While
             End Sub)
         t.Start()
-        Dim t2 As New Task(Sub()
-                               While Not err.EndOfStream
-                                   Dim text = err.ReadLine
-                                   Console.Error.WriteLine(text)
-                                   MessageBox.Show(text)
-                               End While
-                           End Sub)
+        Dim t2 As New Task(
+            Sub()
+                While Not err.EndOfStream
+                    Dim text = err.ReadLine
+                    Console.Error.WriteLine(text)
+                    MessageBox.Show(text)
+                End While
+            End Sub)
         t2.Start()
+
+        For Each path As String In paths
+            inp.WriteLine(path)
+        Next
+        inp.WriteLine()
     End Sub
 
     Private Sub ProcessFinished(sender As Object, e As EventArgs)
