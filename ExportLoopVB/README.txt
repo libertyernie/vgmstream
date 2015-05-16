@@ -1,4 +1,5 @@
-﻿Export Loop VB - version 1.1
+﻿exportloop - version 1.1
+Export Loop VB - version 1.1
 Copyright © 2015 libertyernie
 
 https://github.com/libertyernie/vgmstream
@@ -17,7 +18,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ----------------------------------------
 
-This program is a frontend to exportloop.exe, a C application that uses
+Export Loop VB is a frontend to exportloop.exe, a C application that uses
 vgmstream to convert compatible video game music formats into WAV files.
 Supported formats include BRSTM, HPS, Ogg Vorbis, and many others.
 

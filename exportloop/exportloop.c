@@ -174,7 +174,6 @@ int main(int argc, char** argv) {
 
 	export_types export_type = 0;
 	int vbgui = 0;
-	int readin = 0;
 
 	int i;
 	for (i = 1; i < argc; i++) {
@@ -190,8 +189,6 @@ int main(int argc, char** argv) {
 			export_type |= ZERO_TO_END;
 		} else if (strcasecmp("-vbgui", arg) == 0) {
 			vbgui = 1;
-		} else if (strcasecmp("-readin", arg) == 0) {
-			readin = 1;
 		} else if (strcasecmp("--help", arg) == 0 || strcasecmp("/?", arg) == 0) {
 			return usage(0, argv[0]);
 		} else {
@@ -221,7 +218,8 @@ int main(int argc, char** argv) {
 		char buffer[1024];
 		do {
 			fgets(buffer, 1024, stdin);
-			for (char* ptr = buffer; *ptr != '\0'; ptr++) {
+			char* ptr;
+			for (ptr = buffer; *ptr != '\0'; ptr++) {
 				if (*ptr == '\0') break;
 				if (*ptr == '\r' || *ptr == '\n') {
 					*ptr = '\0';
