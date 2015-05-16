@@ -1,13 +1,9 @@
-﻿BRSTM to WAV Converter 1.0
+﻿Export Loop VB - version 1.0.1
 Copyright © 2015 libertyernie
 
-https://github.com/libertyernie/BrstmToWav
+https://github.com/libertyernie/vgmstream
 
-This program is provided as-is without any warranty, implied or otherwise.
-By using this program, the end user agrees to take full responsibility
-regarding its proper and lawful use. The authors/hosts/distributors cannot be
-held responsible for any damage resulting in the use of this program, nor can
-they be held accountable for the manner in which it is used.
+tbd
 
 ----------------------------------------
 
