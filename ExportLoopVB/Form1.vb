@@ -2,6 +2,8 @@
 Imports System.Text
 
 Public Class Form1
+    Private currentProcess As Process
+
     ''' <summary>
     ''' Quote pathnames in arguments so other Windows applications will understand them.
     ''' Converted from https://github.com/gfxmonk/csharp-quote-argv/blob/master/QuoteArguments.cs
@@ -99,24 +101,20 @@ Public Class Form1
         End If
 
         ProgressBar1.Value = 0
-        ProgressBar1.Maximum = ListView1.Items.Count * 10
 
         pnlReady.Visible = False
         pnlInProgress.Visible = True
 
-        Dim args As String = ""
+        Dim args As String = "-vbgui "
 
         If chk0ToStart.Checked Then
-            ProgressBar1.Maximum += ListView1.Items.Count * 2
-            args += "-0L "
+            args += " -0L"
         End If
         If chkStartToEnd.Checked Then
-            ProgressBar1.Maximum += ListView1.Items.Count * 2
-            args += "-LE "
+            args += " -LE"
         End If
         If chk0ToEnd.Checked Then
-            ProgressBar1.Maximum += ListView1.Items.Count * 2
-            args += "-0E "
+            args += " -0E"
         End If
 
         For Each item As ListViewItem In ListView1.Items
@@ -126,7 +124,7 @@ Public Class Form1
             If item.Text.Contains("\\") Then
                 Throw New Exception("Consecutive backslashes are not allowed in pathnames.")
             End If
-            args += """" + item.Text + """ "
+            args += " """ + item.Text + """"
         Next
 
         Dim startInfo As New ProcessStartInfo("exportloop.exe", args)
@@ -136,30 +134,39 @@ Public Class Form1
         startInfo.UseShellExecute = False
         startInfo.CreateNoWindow = True
 
-        Dim p As Process = Process.Start(startInfo)
-        Dim out As StreamReader = p.StandardOutput
-        Dim err As StreamReader = p.StandardError
-        p.EnableRaisingEvents = True
+        currentProcess = Process.Start(startInfo)
+        Dim out As StreamReader = currentProcess.StandardOutput
+        Dim err As StreamReader = currentProcess.StandardError
+        currentProcess.EnableRaisingEvents = True
 
-        AddHandler p.Exited, AddressOf ProcessFinished
-        If p.HasExited Then
-            ProcessFinished(p, Nothing)
-        End If
+        AddHandler currentProcess.Exited, AddressOf ProcessFinished
 
-        Dim t As New Task(Sub()
-                              While Not out.EndOfStream
-                                  Dim text = out.ReadLine
-                                  Console.WriteLine(text)
-                                  Me.BeginInvoke(New Action(Sub()
-                                                                lblCurrentFile.Text = text
-                                                                If text.StartsWith("Render") Then
-                                                                    ProgressBar1.Value += 10
-                                                                ElseIf text.StartsWith("Output") Then
-                                                                    ProgressBar1.Value += 2
-                                                                End If
-                                                            End Sub))
-                              End While
-                          End Sub)
+        Dim t As New Task(
+            Sub()
+                While Not out.EndOfStream
+                    Dim text = out.ReadLine
+                    Console.WriteLine(text)
+                    Me.BeginInvoke(New Action(
+                                   Sub()
+                                       lblCurrentFile.Text = text
+                                       If text.StartsWith("ProgressMax ") Then
+                                           ProgressBar1.Maximum = Integer.Parse(text.Split(" "c)(1))
+                                       ElseIf text.StartsWith("Progress ") Then
+                                           ProgressBar1.Value = Integer.Parse(text.Split(" "c)(1))
+                                       ElseIf text.StartsWith("Finished") Then
+                                           Dim path = text.Split(" "c)(1)
+                                           For Each item As ListViewItem In ListView1.Items
+                                               If item.Text = path Then
+                                                   ListView1.Items.Remove(item)
+                                                   Exit For
+                                               End If
+                                           Next
+                                       Else
+                                           lblCurrentFile.Text = text
+                                       End If
+                                   End Sub))
+                End While
+            End Sub)
         t.Start()
         Dim t2 As New Task(Sub()
                                While Not err.EndOfStream
@@ -174,11 +181,12 @@ Public Class Form1
     Private Sub ProcessFinished(sender As Object, e As EventArgs)
         Dim p As Process = CType(sender, Process)
         Me.Invoke(Sub()
-                      If p.ExitCode = 0 Then
+                      If currentProcess.ExitCode = 0 Then
                           ListView1.Items.Clear()
                       End If
                       pnlInProgress.Visible = False
                       pnlReady.Visible = True
+                      currentProcess = Nothing
                   End Sub)
     End Sub
 
@@ -205,5 +213,11 @@ Public Class Form1
                         "WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN " &
                         "ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF " &
                         "OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.")
+    End Sub
+
+    Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
+        If currentProcess IsNot Nothing Then
+            currentProcess.Kill()
+        End If
     End Sub
 End Class

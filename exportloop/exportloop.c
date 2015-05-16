@@ -57,6 +57,7 @@ int main(int argc, char** argv) {
 	}
 
 	export_types export_type = 0;
+	int vbgui = 0;
 
 	int i;
 	for (i = 1; i < argc; i++) {
@@ -70,6 +71,8 @@ int main(int argc, char** argv) {
 			export_type |= LOOP_TO_END;
 		} else if (strcasecmp("-0E", arg) == 0) {
 			export_type |= ZERO_TO_END;
+		} else if (strcasecmp("-vbgui", arg) == 0) {
+			vbgui = 1;
 		} else if (strcasecmp("--help", arg) == 0) {
 			return usage(0, argv[0]);
 		} else {
@@ -85,6 +88,15 @@ int main(int argc, char** argv) {
 	int filename_count = argc - i;
 	char** filenames = argv + i;
 
+	int multiplier = 5;
+	if (export_type & ZERO_TO_LOOP) multiplier += 1;
+	if (export_type & LOOP_TO_END) multiplier += 1;
+	if (export_type & ZERO_TO_END) multiplier += 1;
+	if (vbgui) {
+		printf("ProgressMax %d\n", filename_count * multiplier);
+	}
+
+	int progress = 0;
 	int errors = 0;
 	int j;
 	for (j = 0; j < filename_count; j++) {
@@ -94,9 +106,13 @@ int main(int argc, char** argv) {
 		if (vgmstream == NULL) {
 			fprintf(stderr, "Could not open file %s\n", infile);
 			fflush(stderr);
+			progress += multiplier;
 			errors++;
 		} else {
 			char* infile_noext = remove_extension_and_path(infile);
+
+			progress += 5;
+			if (vbgui) printf("Progress %d\n", progress);
 
 			printf("Rendering: %s\n", infile_noext);
 			fflush(stdout);
@@ -109,6 +125,9 @@ int main(int argc, char** argv) {
 			char* outfile = (char*)malloc(strlen(infile_noext) + 20);
 
 			if (export_type & ZERO_TO_LOOP) {
+				progress += 1;
+				if (vbgui) printf("Progress %d\n", progress);
+
 				sprintf(outfile, "%s (beginning).wav", infile_noext);
 				printf("Output: %s\n", outfile);
 				fflush(stdout);
@@ -126,6 +145,9 @@ int main(int argc, char** argv) {
 				fclose(f);
 			}
 			if (export_type & LOOP_TO_END) {
+				progress += 1;
+				if (vbgui) printf("Progress %d\n", progress);
+
 				sprintf(outfile, "%s (loop).wav", infile_noext);
 				printf("Output: %s\n", outfile);
 				fflush(stdout);
@@ -143,6 +165,9 @@ int main(int argc, char** argv) {
 				fclose(f);
 			}
 			if (export_type & ZERO_TO_END) {
+				progress += 1;
+				if (vbgui) printf("Progress %d\n", progress);
+
 				sprintf(outfile, "%s.wav", infile_noext);
 				printf("Output: %s\n", outfile);
 				fflush(stdout);
@@ -164,6 +189,8 @@ int main(int argc, char** argv) {
 			free(outfile);
 			free(wavbuffer);
 			free(infile_noext);
+
+			if (vbgui) printf("Finished %s\n", infile);
 		}
 
 		close_vgmstream(vgmstream);

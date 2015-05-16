@@ -37,11 +37,11 @@ Partial Class Form1
         Me.chk0ToEnd = New System.Windows.Forms.CheckBox()
         Me.btnAbout = New System.Windows.Forms.Button()
         Me.pnlReady = New System.Windows.Forms.Panel()
-        Me.pnlInProgress = New System.Windows.Forms.Panel()
-        Me.ProgressBar1 = New System.Windows.Forms.ProgressBar()
-        Me.lblCurrentFile = New System.Windows.Forms.Label()
         Me.btnStart = New System.Windows.Forms.Button()
+        Me.pnlInProgress = New System.Windows.Forms.Panel()
         Me.btnCancel = New System.Windows.Forms.Button()
+        Me.lblCurrentFile = New System.Windows.Forms.Label()
+        Me.ProgressBar1 = New System.Windows.Forms.ProgressBar()
         Me.pnlReady.SuspendLayout()
         Me.pnlInProgress.SuspendLayout()
         Me.SuspendLayout()
@@ -197,8 +197,20 @@ Partial Class Form1
         Me.pnlReady.Size = New System.Drawing.Size(360, 49)
         Me.pnlReady.TabIndex = 13
         '
+        'btnStart
+        '
+        Me.btnStart.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnStart.Location = New System.Drawing.Point(285, 26)
+        Me.btnStart.Name = "btnStart"
+        Me.btnStart.Size = New System.Drawing.Size(75, 23)
+        Me.btnStart.TabIndex = 12
+        Me.btnStart.Text = "Start"
+        Me.btnStart.UseVisualStyleBackColor = True
+        '
         'pnlInProgress
         '
+        Me.pnlInProgress.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.pnlInProgress.Controls.Add(Me.btnCancel)
         Me.pnlInProgress.Controls.Add(Me.lblCurrentFile)
         Me.pnlInProgress.Controls.Add(Me.ProgressBar1)
@@ -208,14 +220,15 @@ Partial Class Form1
         Me.pnlInProgress.TabIndex = 14
         Me.pnlInProgress.Visible = False
         '
-        'ProgressBar1
+        'btnCancel
         '
-        Me.ProgressBar1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ProgressBar1.Location = New System.Drawing.Point(0, 0)
-        Me.ProgressBar1.Name = "ProgressBar1"
-        Me.ProgressBar1.Size = New System.Drawing.Size(360, 23)
-        Me.ProgressBar1.TabIndex = 0
+        Me.btnCancel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnCancel.Location = New System.Drawing.Point(285, 26)
+        Me.btnCancel.Name = "btnCancel"
+        Me.btnCancel.Size = New System.Drawing.Size(75, 23)
+        Me.btnCancel.TabIndex = 13
+        Me.btnCancel.Text = "Cancel"
+        Me.btnCancel.UseVisualStyleBackColor = True
         '
         'lblCurrentFile
         '
@@ -227,25 +240,14 @@ Partial Class Form1
         Me.lblCurrentFile.TabIndex = 1
         Me.lblCurrentFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'btnStart
+        'ProgressBar1
         '
-        Me.btnStart.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnStart.Location = New System.Drawing.Point(285, 26)
-        Me.btnStart.Name = "btnStart"
-        Me.btnStart.Size = New System.Drawing.Size(75, 23)
-        Me.btnStart.TabIndex = 12
-        Me.btnStart.Text = "Start"
-        Me.btnStart.UseVisualStyleBackColor = True
-        '
-        'btnCancel
-        '
-        Me.btnCancel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnCancel.Location = New System.Drawing.Point(285, 26)
-        Me.btnCancel.Name = "btnCancel"
-        Me.btnCancel.Size = New System.Drawing.Size(75, 23)
-        Me.btnCancel.TabIndex = 13
-        Me.btnCancel.Text = "Cancel"
-        Me.btnCancel.UseVisualStyleBackColor = True
+        Me.ProgressBar1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ProgressBar1.Location = New System.Drawing.Point(0, 0)
+        Me.ProgressBar1.Name = "ProgressBar1"
+        Me.ProgressBar1.Size = New System.Drawing.Size(360, 23)
+        Me.ProgressBar1.TabIndex = 0
         '
         'Form1
         '
