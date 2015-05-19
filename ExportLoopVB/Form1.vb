@@ -137,6 +137,7 @@ Public Class Form1
         startInfo.ErrorDialog = True
         startInfo.UseShellExecute = False
         startInfo.CreateNoWindow = True
+        startInfo.WorkingDirectory = txtOutputDir.Text
 
         currentProcess = Process.Start(startInfo)
         Dim inp As StreamWriter = currentProcess.StandardInput
@@ -216,7 +217,7 @@ Public Class Form1
 
     Private Sub btnAbout_Click(sender As Object, e As EventArgs) Handles btnAbout.Click
         Dim N = Environment.NewLine
-        MessageBox.Show("Export Loop VB - version 1.1" & N & "© 2015 libertyernie" & N & N & "https://github.com/libertyernie/vgmstream" & N & N &
+        MessageBox.Show("Export Loop VB - version 1.1.1" & N & "© 2015 libertyernie" & N & N & "https://github.com/libertyernie/vgmstream" & N & N &
                         "Permission to use, copy, modify, and distribute this software for any " &
                         "purpose with or without fee is hereby granted, provided that the above " &
                         "copyright notice and this permission notice appear in all copies." & vbCrLf &

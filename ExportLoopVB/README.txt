@@ -1,5 +1,5 @@
 ﻿exportloop - version 1.1
-Export Loop VB - version 1.1
+Export Loop VB - version 1.1.1
 Copyright © 2015 libertyernie
 
 https://github.com/libertyernie/vgmstream
