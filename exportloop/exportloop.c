@@ -39,7 +39,7 @@ char* remove_extension_and_path(const char* input) {
 }
 
 int usage(int retval, char* name) {
-	fprintf(stderr, "exportloop 1.1\n"
+	fprintf(stderr, "exportloop 1.1.1\n"
 		"https://github.com/libertyernie/vgmstream\n"
 		"\n"
 		"Permission to use, copy, modify, and distribute this software for any " 
